@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search AI</title>
+    
+
+  <style>
+/* Body with padding, but no flex */
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  margin: 0;
+  background-color: #f4f6f9;
+  padding: 40px 0;
+}
+
+/* Centered form container */
+.container {
+  text-align: center;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto; /* centers horizontally */
+}
+
+/* Form styling */
+form {
+  margin-bottom: 25px;
+  padding: 25px 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Inputs */
+input {
+  margin: 10px 0;
+  padding: 12px 15px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: #4CAF50;
+  outline: none;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.3);
+}
+
+/* Button */
+button {
+  padding: 12px 25px;
+  background: #4CAF50;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+  margin-top: 10px;
+}
+
+button:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+}
+
+/* Output box below form */
+#output {
+  margin: 20px auto;
+  padding: 15px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  width: 95%; /* nearly full width */
+  max-width: 1200px; /* optional max width */
+  overflow-x: auto;
+}
+
+/* Table styling */
+#output table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Segoe UI", Arial, sans-serif;
+  min-width: 400px;
+}
+
+#output th, #output td {
+  padding: 12px 15px;
+  border: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+#output th {
+  background-color: #4CAF50;
+  color: #fff;
+  font-weight: 600;
+}
+
+#output tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#output tr:hover {
+  background-color: #f1f1f1;
+}
+  </style>
+</head>
+<body>
+   
+  
+  <!-- <form id="searchForm">
+    <input type="text" id="query1" placeholder="Enter Job description" required>
+    <input type="text" id="query2" placeholder="Enter Expected salary" required>
+    <button type="submit">Search</button>
+  </form>
+
+
+
+    <div id="output"></div>
+ -->
+
+
+<!-- <div class="container">
+    <h2>AI Job Search</h2>
+  <form id="searchForm">
+    <input type="text" id="query1" placeholder="Enter Job description" required>
+    <input type="text" id="query2" placeholder="Enter Expected salary" required>
+    <button type="submit">Search</button>
+  </form>
+
+  
+</div> -->
+<div class="container">
+  <h2>AI Job Search</h2>
+  <form id="searchForm">
+    <textarea id="query1" placeholder="Enter Job description" required rows="4" cols="50"></textarea>
+    <input type="text" id="query2" placeholder="Enter Expected salary" required>
+    <button type="submit">Search</button>
+  </form>
+</div>
+<div id="output">Your search results will appear here.</div>
+
+    
+    <!-- Json output only -->
+<!-- <script>
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let jobDescription = document.getElementById("query1").value;
+  let expectedSalary = document.getElementById("query2").value;
+
+  try {
+    let res = await fetch("https://n8n.roochedigital.com/webhook-test/sample.html", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        job: jobDescription, 
+        salary: expectedSalary 
+      })
+    });
+
+    let text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+
+    // Display JSON prettified
+    document.getElementById("output").innerHTML = `
+      <pre>${JSON.stringify(data, null, 2)}</pre>
+    `;
+
+    document.getElementById("searchForm").reset();
+
+  } catch (error) {
+    document.getElementById("output").innerText = "Error: " + error.message;
+  }
+});
+</script> -->
+
+<!-- ouput in table -->
+<!-- <script>
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let jobDescription = document.getElementById("query1").value;
+  let expectedSalary = document.getElementById("query2").value;
+
+  try {
+    let res = await fetch("https://n8n.roochedigital.com/webhook-test/sample.html", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        job: jobDescription, 
+        salary: expectedSalary 
+      })
+    });
+
+    let text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+
+    // Gumawa ng table kung object o array yung JSON
+    let table = "<table border='1' cellpadding='8' cellspacing='0' style='border-collapse: collapse;'>";
+    
+    if (Array.isArray(data)) {
+      // Kung array of objects (e.g. [ {name:"Juan", age:20}, {...} ])
+      let headers = Object.keys(data[0]);
+      table += "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+
+      data.forEach(row => {
+        table += "<tr>" + headers.map(h => `<td>${row[h]}</td>`).join("") + "</tr>";
+      });
+
+    } else if (typeof data === "object") {
+      // Kung single object (e.g. {name:"Juan", age:20})
+      let headers = Object.keys(data);
+      table += "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+      table += "<tr>" + headers.map(h => `<td>${data[h]}</td>`).join("") + "</tr>";
+
+    } else {
+      table += `<tr><td>${data}</td></tr>`;
+    }
+
+    table += "</table>";
+
+    document.getElementById("output").innerHTML = table;
+
+    document.getElementById("searchForm").reset();
+
+  } catch (error) {
+    document.getElementById("output").innerText = "Error: " + error.message;
+  }
+});
+</script> -->
+
+
+<!-- <script>
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let jobDescription = document.getElementById("query1").value;
+  let expectedSalary = document.getElementById("query2").value;
+
+  try {
+    let res = await fetch("https://n8n.roochedigital.com/webhook-test/sample.html", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ job: jobDescription, salary: expectedSalary })
+    });
+
+    let text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+
+    let table = "<table>";
+
+    if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object") {
+      let headers = Object.keys(data[0]);
+      table += "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+
+      data.forEach(row => {
+        table += "<tr>" + headers.map(h => `<td>${row[h]}</td>`).join("") + "</tr>";
+      });
+
+    } else if (typeof data === "object") {
+      let headers = Object.keys(data);
+      table += "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+      table += "<tr>" + headers.map(h => `<td>${data[h]}</td>`).join("") + "</tr>";
+
+    } else {
+      table += `<tr><td>${data}</td></tr>`;
+    }
+
+    table += "</table>";
+
+    document.getElementById("output").innerHTML = table;
+
+    document.getElementById("searchForm").reset();
+
+  } catch (error) {
+    document.getElementById("output").innerText = "Error: " + error.message;
+  }
+});
+</script> -->
+
+
+<!-- table with button na pag e click is mag alert base on row_number sa spreadsheets -->
+<!-- <script>
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let jobDescription = document.getElementById("query1").value;
+  let expectedSalary = document.getElementById("query2").value;
+
+  // Helper function to flatten nested JSON
+  function flattenData(obj, parentKey = '', result = {}) {
+    for (let key in obj) {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        flattenData(obj[key], parentKey + key + ' ', result); // add space to separate keys
+      } else {
+        result[parentKey + key] = obj[key];
+      }
+    }
+    return result;
+  }
+
+  try {
+    let res = await fetch("https://n8n.roochedigital.com/webhook-test/sample.html", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ job: jobDescription, salary: expectedSalary })
+    });
+
+    let text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+
+    let rows = Array.isArray(data) ? data : [data]; // ensure array
+
+    let table = "<table border='1'>";
+
+    // Flatten all rows
+    let flattenedRows = rows.map(row => flattenData(row));
+
+    // Collect headers (excluding row_number)
+    let headersSet = new Set();
+    flattenedRows.forEach(row => {
+      Object.keys(row).forEach(key => {
+        if (key !== 'row_number') headersSet.add(key);
+      });
+    });
+    let headers = Array.from(headersSet);
+    headers.push("Action"); // Add action column
+    table += "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+
+    // Add rows
+    flattenedRows.forEach(row => {
+      table += "<tr>";
+      headers.forEach(h => {
+        if (h === "Action") {
+          table += `<td><button class="shortListBtn" data-row="${row.row_number || 1}">Short List</button></td>`;
+        } else {
+          table += `<td>${row[h] || ''}</td>`;
+        }
+      });
+      table += "</tr>";
+    });
+
+    table += "</table>";
+    document.getElementById("output").innerHTML = table;
+    document.getElementById("searchForm").reset();
+
+    // Button click events
+    document.querySelectorAll(".shortListBtn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const rowNumber = btn.getAttribute("data-row");
+        alert(`Short List clicked for row number: ${rowNumber}`);
+        // Implement your short-list logic here
+      });
+    });
+
+  } catch (error) {
+    document.getElementById("output").innerText = "Error: " + error.message;
+  }
+});
+</script> -->
+
+
+
+<!-- table with button na pag e click is mag triger sya pa punta sa webhook -->
+<script>
+document.getElementById("searchForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let jobDescription = document.getElementById("query1").value;
+  let expectedSalary = document.getElementById("query2").value;
+
+  // Helper function to flatten nested JSON
+  function flattenData(obj, parentKey = '', result = {}) {
+    for (let key in obj) {
+      if (typeof obj[key] === 'object' && obj[key] !== null) {
+        flattenData(obj[key], parentKey + key + ' ', result);
+      } else {
+        result[parentKey + key] = obj[key];
+      }
+    }
+    return result;
+  }
+
+  try {
+    let res = await fetch("https://n8n.roochedigital.com/webhook-test/sample.html", { 
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ job: jobDescription, salary: expectedSalary })
+    });
+
+    let text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { raw: text };
+    }
+
+    let rows = Array.isArray(data) ? data : [data];
+    let table = "<table border='1'>";
+    let flattenedRows = rows.map(row => flattenData(row));
+
+    // Collect headers except row_number
+    let headersSet = new Set();
+    flattenedRows.forEach(row => {
+      Object.keys(row).forEach(key => {
+        if (key !== 'row_number') headersSet.add(key);
+      });
+    });
+    let headers = Array.from(headersSet);
+    headers.push("Action");
+    table += "<tr>" + headers.map(h => `<th>${h}</th>`).join("") + "</tr>";
+
+    // Add rows
+    flattenedRows.forEach(row => {
+      table += "<tr>";
+      headers.forEach(h => {
+        if (h === "Action") {
+          table += `<td><button class="shortListBtn" data-row="${row.row_number || 1}">Short List</button></td>`;
+        } else {
+          table += `<td>${row[h] || ''}</td>`;
+        }
+      });
+      table += "</tr>";
+    });
+
+    table += "</table>";
+    document.getElementById("output").innerHTML = table;
+    document.getElementById("searchForm").reset();
+
+    // Button click events
+    document.querySelectorAll(".shortListBtn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const rowNumber = btn.getAttribute("data-row");
+
+        try {
+          let webhookRes = await fetch("https://n8n.roochedigital.com/webhook-test/sample.html", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ row_number: rowNumber })
+          });
+
+          let result = await webhookRes.text();
+          alert(`Row ${rowNumber} sent to webhook!\nResponse: ${result}`);
+        } catch (err) {
+          alert("Error sending to webhook: " + err.message);
+        }
+      });
+    });
+
+  } catch (error) {
+    document.getElementById("output").innerText = "Error: " + error.message;
+  }
+});
+</script>
+
+    
+</body>
+</html>
